@@ -5,7 +5,7 @@ import Navi from "./Navi";
 import ProductList from "./ProductList";
 
 export default class App extends Component {
-  state = { currentCategory: "" , products:[]};
+  state = { currentCategory: "" , products:[], cart:[]};//cart sepet manasında
 
   componentDidMount(){
     this.getProducts();
@@ -25,23 +25,32 @@ export default class App extends Component {
       .then(response => response.json()) // gelen response u json a döndür.
       .then(data=> this.setState({ products: data }));
   };
-
+  addToCard=(product)=>{
+   // alert(product.productName);
+   let newCart=this.state.cart;
+   var addedItem=newCart.find(c=>c.product.id===product.id)
+   if(addedItem){
+    addedItem.quantity+=1;
+   }else{
+    newCart.push({product:product,quantity:1});
+   }
+   this.setState({cart:newCart});
+  }
   render() {
     let productInfo = { title: "Product List", deneme: "la la" };
 
     return (
       <div>
-        <Container>
-          <Row>
-            <Navi />
-          </Row>
+        <Container>         
+             <Navi cart={this.state.cart} /> {/*send to cart info*/}
           <Row>
             <Col xs="3">
               <CategoryList title="Category List" />
             </Col>
             <Col xs="9">
               <ProductList
-              products={this.state.products}
+                products={this.state.products}
+                addToCard={this.addToCard}
                 currentCategory={this.state.currentCategory}
                 // changeCategory={this.changeCategory}
                 info={productInfo}
